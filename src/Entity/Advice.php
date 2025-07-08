@@ -2,11 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\AdviceRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\AdviceRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Attribute\Groups;
+
 
 #[ORM\Entity(repositoryClass: AdviceRepository::class)]
 class Advice
@@ -20,12 +22,15 @@ class Advice
      * @var Collection<int, User>
      */
     #[ORM\ManyToMany(targetEntity: User::class)]
+    #[Groups(["advices"])]
     private Collection $createdBy;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(["advices"])]
     private ?string $text = null;
 
     #[ORM\Column]
+    #[Groups(["advices"])]
     private ?int $month = null;
 
     public function __construct()
