@@ -21,13 +21,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    private ?string $email = null;
     #[Groups(["users"])]
-
+    private ?string $email = null;
+    
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Groups(["users"])]
     private array $roles = [];
 
     /**
@@ -156,7 +157,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->advices->contains($advice)) {
             $this->advices->add($advice);
-            $advice->setUser($this);
+            $advice->setCreatedBy($this);
         }
 
         return $this;
@@ -166,8 +167,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->advices->removeElement($advice)) {
             // set the owning side to null (unless already changed)
-            if ($advice->getUser() === $this) {
-                $advice->setUser(null);
+            if ($advice->getCreatedBy() === $this) {
+                $advice->setCreatedBy(null);
             }
         }
 
