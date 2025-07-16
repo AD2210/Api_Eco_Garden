@@ -58,12 +58,12 @@ class Advice
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getCreatedBy(): ?User
     {
         return $this->createdBy;
     }
 
-    public function setUser(?User $createdBy): static
+    public function setCreatedBy(?User $createdBy): static
     {
         $this->createdBy = $createdBy;
 
