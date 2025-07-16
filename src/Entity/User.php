@@ -17,11 +17,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["advices"])]
+    #[Groups(["advices", "users"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
     private ?string $email = null;
+    #[Groups(["users"])]
 
     /**
      * @var list<string> The user roles
@@ -36,6 +37,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 10, nullable: true)]
+    #[Groups(["users"])]
     private ?string $postalCode = null;
 
     /**

@@ -68,7 +68,7 @@ final class AdviceController extends AbstractController
     }
 
     #[Route('/conseil', name: 'advice_create', methods: ['POST'])]
-    public function postAdvice(Request $request, EntityManagerInterface $em, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
+    public function createAdvice(Request $request, EntityManagerInterface $em, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
         //On extrait la requetes et on dérialise en une instance de Advice
         $advice = $serializer->deserialize($request->getContent(), Advice::class, 'json');
