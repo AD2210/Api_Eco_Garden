@@ -66,7 +66,10 @@ symfony serve -d
 
 Pour vous logger, en fonction du rôle souhaité :
 
+Pour vous logger, en fonction du rôle souhaité :
+
 user : `user@ecogarden.com` ou `admin@ecogarden.com`
+
 
 mot de passe : `password123`
 
