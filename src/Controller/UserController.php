@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -18,14 +20,26 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 final class UserController extends AbstractController
 {
     private $passwordHasher;
-    public function __construct(UserPasswordHasherInterface $passwordHasher) {
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
         $this->passwordHasher = $passwordHasher;
     }
 
-    #[Route('/user', name: 'user_create', methods:['POST'])]
-    public function createUser(Request $request, EntityManagerInterface $em, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
-    {
+    #[Route('/user', name: 'user_create', methods: ['POST'])]
+    public function createUser(
+        Request $request,
+        EntityManagerInterface $em,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        UserRepository $userRepository
+    ): JsonResponse {
         $user = $serializer->deserialize($request->getContent(), User::class, 'json');
+
+        // On gère le cas d'une erreur d'unicité sur l'email
+        $existingEmail = $userRepository->findOneBy(['email' => $user->getEmail()])->getEmail();
+        if (isset($existingEmail)){
+            throw new ConflictHttpException(sprintf("l'utilisateur est déjà enregistré : %s", $existingEmail));
+        }
 
         //On contrôle les erreurs du validator paramétré dans l'entité (Assert)
         $error = $validator->validate($user);
@@ -62,7 +76,7 @@ final class UserController extends AbstractController
         }
 
         //On vérifie la présence de la maj du password et on hash. cela evite de hashé 2 fois
-        if ($serializer->deserialize($request->getContent(), User::class, 'json')->getPassword() !== null){
+        if ($serializer->deserialize($request->getContent(), User::class, 'json')->getPassword() !== null) {
             $plainPassword = $updatedUser->getPassword();
             $updatedUser->setPassword($this->passwordHasher->hashPassword($updatedUser, $plainPassword));
         }
