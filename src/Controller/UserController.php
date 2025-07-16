@@ -86,8 +86,13 @@ final class UserController extends AbstractController
     }
 
     #[Route('/user/{id}', name: 'user_delete', methods: ['DELETE'])]
-    public function deleteUser(User $user, EntityManagerInterface $em): JsonResponse
+    public function deleteUser(User $user,int $id, EntityManagerInterface $em): JsonResponse
     {
+        // On vérifie le pattern de saisie de l'id et on renvoie une erreur 400 si erroné
+        if (!preg_match('/^[1-9][0-9]*$/', $id)) {
+            throw new BadRequestHttpException("L'id doit être un nombre entier positif");
+        }
+
         $em->remove($user);
         $em->flush();
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);

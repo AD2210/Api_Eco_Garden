@@ -114,8 +114,6 @@ final class AdviceController extends AbstractController
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
-
-    //@todo 400 si non traité avec validator (exemple text non null si mal orthographié)
     #[Route('/conseil', name: 'advice_create', methods: ['POST'])]
     public function createAdvice(
         Request $request,

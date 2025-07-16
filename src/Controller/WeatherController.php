@@ -46,9 +46,7 @@ final class WeatherController extends AbstractController
             $baseUrl
         );
 
-        $customForecast = $wheaterForecastService->makeCustomForcast($response);
-
-        return $customForecast;
+        return $wheaterForecastService->makeCustomForcast($response);
     }
 
     #[Route('/meteo/{city}', name: 'weather_city', methods:['GET'])]
@@ -65,8 +63,6 @@ final class WeatherController extends AbstractController
             $baseUrl
         );
 
-        $customForecast = $wheaterForecastService->makeCustomForcast($response);
-
-        return $customForecast;
+        return $wheaterForecastService->makeCustomForcast($response);
     }
 }
