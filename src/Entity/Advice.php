@@ -6,6 +6,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\AdviceRepository;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: AdviceRepository::class)]
@@ -18,10 +19,12 @@ class Advice
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: "Le champ text du conseil est obligatoire")]
     #[Groups(["advices"])]
     private ?string $text = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: "Veuillez preciser le mois auquel ce conseil fait référence")]
     #[Groups(["advices"])]
     private ?int $month = null;
 

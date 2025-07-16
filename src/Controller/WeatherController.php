@@ -23,7 +23,7 @@ final class WeatherController extends AbstractController
         $this->tokenStorageInterface = $tokenStorageInterface;
     }
 
-    #[Route('/meteo', name: 'weather')]
+    #[Route('/meteo', name: 'weather', methods:['GET'])]
     public function wheatherByUserZipCode(UserRepository $userRepository, HttpClientInterface $httpClient, WheaterForecastCustom $wheaterForecastService): JsonResponse
     {
         //On récupère le token pour extraire le User
@@ -51,7 +51,7 @@ final class WeatherController extends AbstractController
         return $customForecast;
     }
 
-    #[Route('/meteo/{city}', name: 'weather_city')]
+    #[Route('/meteo/{city}', name: 'weather_city', methods:['GET'])]
     public function index(string $city, HttpClientInterface $httpClient, WheaterForecastCustom $wheaterForecastService): JsonResponse
     {
         $baseUrl = 'https://api.openweathermap.org/data/2.5/weather?q='
