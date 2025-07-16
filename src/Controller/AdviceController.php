@@ -35,6 +35,11 @@ final class AdviceController extends AbstractController
         $month = (int)date('m'); // renvoie le mois en cours
         $advices = $adviceRepository->findBy(['month' => $month]);
 
+        // On affiche une réponse personnalisé car la requete est bonne mais aucune données
+        if (empty($advices)){
+            $advices = ['Aucun conseil publié pour le mois en cours'];
+        }
+
         $jsonAdvices = $serializer->serialize($advices, 'json', ['groups' => 'advices']);
         return new JsonResponse($jsonAdvices, Response::HTTP_OK, [], true);
     }
@@ -42,18 +47,30 @@ final class AdviceController extends AbstractController
     #[Route('/conseil/{month}', name: 'advice_month', methods: ['GET'])]
     public function getAdvicesByMonth(int $month, AdviceRepository $adviceRepository, SerializerInterface $serializer): JsonResponse
     {
+        // On vérifie le pattern de saisie du mois et on renvoie une erreur 400 si erroné
         if (!preg_match('/^(?:[1-9]|1[0-2])$/', $month)) {
             throw new BadRequestHttpException("Le mois doit être un entier entre 1 et 12.");
         }
+
         $advices = $adviceRepository->findBy(['month' => $month]);
+
+        // On affiche une réponse personnalisé car la requete est bonne mais aucune données
+        if (empty($advices)){
+            $advices = ['Aucun conseil publié pour le mois selectionné'];
+        }
 
         $jsonAdvices = $serializer->serialize($advices, 'json', ['groups' => 'advices']);
         return new JsonResponse($jsonAdvices, Response::HTTP_OK, [], true);
     }
 
     #[Route('/conseil/{id}', name: 'advice_delete', methods: ['DELETE'])]
-    public function deleteAdvice(Advice $advice, EntityManagerInterface $em): JsonResponse
+    public function deleteAdvice(Advice $advice, int $id, EntityManagerInterface $em): JsonResponse
     {
+        // On vérifie le pattern de saisie de l'id et on renvoie une erreur 400 si erroné
+        if (!preg_match('/^[1-9][0-9]*$/', $id)) {
+            throw new BadRequestHttpException("L'id doit être un nombre entier positif");
+        }
+
         $em->remove($advice);
         $em->flush();
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
@@ -62,12 +79,18 @@ final class AdviceController extends AbstractController
     #[Route('/conseil/{id}', name: 'advice_update', methods: ['PUT'])]
     public function updateAdvice(
         Advice $currentAdvice,
+        int $id,
         Request $request,
         EntityManagerInterface $em,
         SerializerInterface $serializer,
         ValidatorInterface $validator,
         UserRepository $userRepository
     ): JsonResponse {
+
+        // On vérifie le pattern de saisie de l'id et on renvoie une erreur 400 si erroné
+        if (!preg_match('/^[1-9][0-9]*$/', $id)) {
+            throw new BadRequestHttpException("L'id doit être un nombre entier positif");
+        }
 
         //On récupère le token pour extraire le User
         $token = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
@@ -92,6 +115,7 @@ final class AdviceController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
+    //@todo 400 si non traité avec validator (exemple text non null si mal orthographié)
     #[Route('/conseil', name: 'advice_create', methods: ['POST'])]
     public function createAdvice(
         Request $request,

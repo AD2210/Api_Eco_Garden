@@ -35,12 +35,6 @@ final class UserController extends AbstractController
     ): JsonResponse {
         $user = $serializer->deserialize($request->getContent(), User::class, 'json');
 
-        // On gère le cas d'une erreur d'unicité sur l'email
-        $existingEmail = $userRepository->findOneBy(['email' => $user->getEmail()])->getEmail();
-        if (isset($existingEmail)){
-            throw new ConflictHttpException(sprintf("l'utilisateur est déjà enregistré : %s", $existingEmail));
-        }
-
         //On contrôle les erreurs du validator paramétré dans l'entité (Assert)
         $error = $validator->validate($user);
         if ($error->count() > 0) {
