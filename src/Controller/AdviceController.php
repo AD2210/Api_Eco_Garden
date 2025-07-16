@@ -4,20 +4,31 @@ namespace App\Controller;
 
 use App\Entity\Advice;
 use App\Repository\AdviceRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 #[Route(path: "/api", name: "app_api_")]
 final class AdviceController extends AbstractController
 {
+    private $jwtManager;
+    private $tokenStorageInterface;
+    public function __construct(TokenStorageInterface $tokenStorageInterface, JWTTokenManagerInterface $jwtManager)
+    {
+        $this->jwtManager = $jwtManager;
+        $this->tokenStorageInterface = $tokenStorageInterface;
+    }
+
     #[Route('/conseil', name: 'advices', methods: ['GET'])]
     public function getAllAdvices(AdviceRepository $adviceRepository, SerializerInterface $serializer): JsonResponse
     {
@@ -49,17 +60,31 @@ final class AdviceController extends AbstractController
     }
 
     #[Route('/conseil/{id}', name: 'advice_update', methods: ['PUT'])]
-    public function updateAdvice(Advice $currentAdvice, Request $request, EntityManagerInterface $em, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
-    {
+    public function updateAdvice(
+        Advice $currentAdvice,
+        Request $request,
+        EntityManagerInterface $em,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        UserRepository $userRepository
+    ): JsonResponse {
+
+        //On récupère le token pour extraire le User
+        $token = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
+        $user = $userRepository->findOneBy(['email' => $token['username']]);
+
         //On extrait la requetes et on dérialise en une instance de Advice
         $updatedAdvice = $serializer->deserialize($request->getContent(), Advice::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $currentAdvice]);
-
 
         //On contrôle les erreurs du validator paramétré dans l'entité (Assert)
         $error = $validator->validate($updatedAdvice);
         if ($error->count() > 0) {
             return new JsonResponse($serializer->serialize($error, 'json'), Response::HTTP_BAD_REQUEST, [], true);
         }
+        //On enregistre le User ayant fait la maj
+        //@todo On peut aussi vérifié que le User qui initie la maj est le créateur du post
+        $updatedAdvice->setCreatedBy($user);
+
         //On persist et sauvegarde en bdd le conseil mis à jour
         $em->persist($updatedAdvice);
         $em->flush();
@@ -68,8 +93,17 @@ final class AdviceController extends AbstractController
     }
 
     #[Route('/conseil', name: 'advice_create', methods: ['POST'])]
-    public function createAdvice(Request $request, EntityManagerInterface $em, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
-    {
+    public function createAdvice(
+        Request $request,
+        EntityManagerInterface $em,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator,
+        UserRepository $userRepository
+    ): JsonResponse {
+        //On récupère le token pour extraire le User
+        $token = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
+        $user = $userRepository->findOneBy(['email' => $token['username']]);
+
         //On extrait la requetes et on dérialise en une instance de Advice
         $advice = $serializer->deserialize($request->getContent(), Advice::class, 'json');
 
@@ -78,6 +112,9 @@ final class AdviceController extends AbstractController
         if ($error->count() > 0) {
             return new JsonResponse($serializer->serialize($error, 'json'), Response::HTTP_BAD_REQUEST, [], true);
         }
+
+        //On enregistre le User ayant créer le conseil
+        $advice->setCreatedBy($user);
 
         //On persist et sauvegarde en bdd
         $em->persist($advice);
