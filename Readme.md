@@ -57,14 +57,16 @@ symfony console doctrine:fixtures:load
 
 Démarer votre serveur symfony
 
-<i class="fa-solid fa-circle-info"></i> NB : si vous avez la version 5.12.0 de symfony CLI le -d ne fonctionne plus sur Windows
+:warning: si vous avez la version 5.12.0 de symfony CLI le `-d` ne fonctionne plus sur Windows
 
 ```bash
 symfony serve -d
 ```
 
-Pour vous logger, voir dans la base une fois les fixtures créés les adresses mails générées en fonction du rôle souhaité
+Pour vous logger, en fonction du rôle souhaité :
+
 user : `user@ecogarden.com` ou `admin@ecogarden.com`
+
 mot de passe : `password123`
 
 ## License
