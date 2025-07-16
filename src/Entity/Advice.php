@@ -26,7 +26,8 @@ class Advice
     private ?int $month = null;
 
     #[ORM\ManyToOne(inversedBy: 'advices')]
-    private ?User $user = null;
+    #[Groups(["advices"])]
+    private ?User $createdBy = null;
 
     public function getId(): ?int
     {
@@ -59,12 +60,12 @@ class Advice
 
     public function getUser(): ?User
     {
-        return $this->user;
+        return $this->createdBy;
     }
 
-    public function setUser(?User $user): static
+    public function setUser(?User $createdBy): static
     {
-        $this->user = $user;
+        $this->createdBy = $createdBy;
 
         return $this;
     }

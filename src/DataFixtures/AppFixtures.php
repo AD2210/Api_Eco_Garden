@@ -36,7 +36,7 @@ class AppFixtures extends Fixture
             $advice = new Advice();
             $advice->setText("Lorem Ipsum". $i);
             $advice->setMonth(random_int(1,12));
-            $advice->addCreatedBy($i%2 == 0 ? $user : $admin); //on attribut un auteur
+            $advice->setUser($i%2 == 0 ? $user : $admin); //on attribut un auteur
             $manager->persist($advice);
         }
 
