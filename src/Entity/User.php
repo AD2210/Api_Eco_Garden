@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -35,6 +37,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 10, nullable: true)]
     private ?string $postalCode = null;
+
+    /**
+     * @var Collection<int, Advice>
+     */
+    #[ORM\OneToMany(targetEntity: Advice::class, mappedBy: 'user')]
+    private Collection $advices;
+
+    public function __construct()
+    {
+        $this->advices = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -125,6 +138,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPostalCode(?string $postalCode): static
     {
         $this->postalCode = $postalCode;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Advice>
+     */
+    public function getAdvices(): Collection
+    {
+        return $this->advices;
+    }
+
+    public function addAdvice(Advice $advice): static
+    {
+        if (!$this->advices->contains($advice)) {
+            $this->advices->add($advice);
+            $advice->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAdvice(Advice $advice): static
+    {
+        if ($this->advices->removeElement($advice)) {
+            // set the owning side to null (unless already changed)
+            if ($advice->getUser() === $this) {
+                $advice->setUser(null);
+            }
+        }
 
         return $this;
     }

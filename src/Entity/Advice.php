@@ -5,8 +5,6 @@ namespace App\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\AdviceRepository;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 
@@ -16,14 +14,8 @@ class Advice
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
-
-    /**
-     * @var Collection<int, User>
-     */
-    #[ORM\ManyToMany(targetEntity: User::class)]
     #[Groups(["advices"])]
-    private Collection $createdBy;
+    private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(["advices"])]
@@ -33,38 +25,12 @@ class Advice
     #[Groups(["advices"])]
     private ?int $month = null;
 
-    public function __construct()
-    {
-        $this->createdBy = new ArrayCollection();
-    }
+    #[ORM\ManyToOne(inversedBy: 'advices')]
+    private ?User $user = null;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    /**
-     * @return Collection<int, User>
-     */
-    public function getCreatedBy(): Collection
-    {
-        return $this->createdBy;
-    }
-
-    public function addCreatedBy(User $createdBy): static
-    {
-        if (!$this->createdBy->contains($createdBy)) {
-            $this->createdBy->add($createdBy);
-        }
-
-        return $this;
-    }
-
-    public function removeCreatedBy(User $createdBy): static
-    {
-        $this->createdBy->removeElement($createdBy);
-
-        return $this;
     }
 
     public function getText(): ?string
@@ -87,6 +53,18 @@ class Advice
     public function setMonth(int $month): static
     {
         $this->month = $month;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }
