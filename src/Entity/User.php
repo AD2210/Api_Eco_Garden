@@ -2,10 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use App\Repository\UserRepository;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -14,15 +17,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["advices", "users"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Groups(["users"])]
     private ?string $email = null;
-
+    
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Groups(["users"])]
     private array $roles = [];
 
     /**
@@ -32,7 +38,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 10, nullable: true)]
+    #[Groups(["users"])]
     private ?string $postalCode = null;
+
+    /**
+     * @var Collection<int, Advice>
+     */
+    #[ORM\OneToMany(targetEntity: Advice::class, mappedBy: 'createdBy')]
+    private Collection $advices;
+
+    public function __construct()
+    {
+        $this->advices = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -123,6 +141,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPostalCode(?string $postalCode): static
     {
         $this->postalCode = $postalCode;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Advice>
+     */
+    public function getAdvices(): Collection
+    {
+        return $this->advices;
+    }
+
+    public function addAdvice(Advice $advice): static
+    {
+        if (!$this->advices->contains($advice)) {
+            $this->advices->add($advice);
+            $advice->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAdvice(Advice $advice): static
+    {
+        if ($this->advices->removeElement($advice)) {
+            // set the owning side to null (unless already changed)
+            if ($advice->getCreatedBy() === $this) {
+                $advice->setCreatedBy(null);
+            }
+        }
 
         return $this;
     }

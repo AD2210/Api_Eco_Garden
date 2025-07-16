@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\AdviceRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\AdviceRepository;
+use Symfony\Component\Serializer\Attribute\Groups;
+
 
 #[ORM\Entity(repositoryClass: AdviceRepository::class)]
 class Advice
@@ -14,52 +14,24 @@ class Advice
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["advices"])]
     private ?int $id = null;
 
-    /**
-     * @var Collection<int, User>
-     */
-    #[ORM\ManyToMany(targetEntity: User::class)]
-    private Collection $createdBy;
-
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(["advices"])]
     private ?string $text = null;
 
     #[ORM\Column]
+    #[Groups(["advices"])]
     private ?int $month = null;
 
-    public function __construct()
-    {
-        $this->createdBy = new ArrayCollection();
-    }
+    #[ORM\ManyToOne(inversedBy: 'advices')]
+    #[Groups(["advices"])]
+    private ?User $createdBy = null;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    /**
-     * @return Collection<int, User>
-     */
-    public function getCreatedBy(): Collection
-    {
-        return $this->createdBy;
-    }
-
-    public function addCreatedBy(User $createdBy): static
-    {
-        if (!$this->createdBy->contains($createdBy)) {
-            $this->createdBy->add($createdBy);
-        }
-
-        return $this;
-    }
-
-    public function removeCreatedBy(User $createdBy): static
-    {
-        $this->createdBy->removeElement($createdBy);
-
-        return $this;
     }
 
     public function getText(): ?string
@@ -82,6 +54,18 @@ class Advice
     public function setMonth(int $month): static
     {
         $this->month = $month;
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        $this->createdBy = $createdBy;
 
         return $this;
     }
