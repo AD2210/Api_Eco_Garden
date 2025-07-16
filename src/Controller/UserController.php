@@ -3,17 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[Route(path: "/api", name: "app_api_")]
@@ -30,10 +29,15 @@ final class UserController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
         SerializerInterface $serializer,
-        ValidatorInterface $validator,
-        UserRepository $userRepository
+        ValidatorInterface $validator
     ): JsonResponse {
         $user = $serializer->deserialize($request->getContent(), User::class, 'json');
+        
+        // on rejete tout champ "roles", Pas Obligatoire car forcer plus bas
+        $data = json_decode($request->getContent(), true);
+        if (isset($data['roles'])) {
+            throw new BadRequestHttpException("Le champ 'roles' n'est pas autorisé lors de la création.");
+        }
 
         //On contrôle les erreurs du validator paramétré dans l'entité (Assert)
         $error = $validator->validate($user);
@@ -44,14 +48,13 @@ final class UserController extends AbstractController
         //On hash le password pour sauvegarde bdd
         $plainPassword = $user->getPassword();
         $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
-
         $user->setRoles(["ROLE_USER"]); // On force ROLE_USER à la création pour eviter que n'importe qui soit Admin
 
         //On persist et sauvegarde en bdd
         $em->persist($user);
         $em->flush();
 
-        // On renvoie le conseil créé avec une réponse 201
+        // On renvoie l'utilisateur' créé avec une réponse 201
         $jsonUser = $serializer->serialize($user, 'json', ['groups' => 'users']);
         return new JsonResponse($jsonUser, Response::HTTP_CREATED, [], true);
     }
@@ -69,7 +72,7 @@ final class UserController extends AbstractController
             return new JsonResponse($serializer->serialize($error, 'json'), Response::HTTP_BAD_REQUEST, [], true);
         }
 
-        //On vérifie la présence de la maj du password et on hash. cela evite de hashé 2 fois
+        //On vérifie la présence de la maj du password et on hash. Cela evite de hashé 2 fois
         if ($serializer->deserialize($request->getContent(), User::class, 'json')->getPassword() !== null) {
             $plainPassword = $updatedUser->getPassword();
             $updatedUser->setPassword($this->passwordHasher->hashPassword($updatedUser, $plainPassword));
