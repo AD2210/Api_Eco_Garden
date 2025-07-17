@@ -20,12 +20,12 @@ class Advice
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(message: "Le champ text du conseil est obligatoire")]
-    #[Groups(["advices"])]
+    #[Groups(["advices", "edit"])]
     private ?string $text = null;
 
     #[ORM\Column]
     #[Assert\NotBlank(message: "Veuillez preciser le mois auquel ce conseil fait référence")]
-    #[Groups(["advices"])]
+    #[Groups(["advices", "edit"])]
     private ?int $month = null;
 
     #[ORM\ManyToOne(inversedBy: 'advices')]

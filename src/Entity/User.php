@@ -27,14 +27,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180)]
     #[Assert\NotBlank(message: "L'email est obligatoire")]
     #[Assert\Email(message: "L'email {{ value }} n'est pas un email valide")]
-    #[Groups(["users"])]
+    #[Groups(["users","edit","create"])]
     private ?string $email = null;
     
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
-    #[Groups(["users"])]
+    #[Groups(["users", "edit"])]
     private array $roles = [];
 
     /**
@@ -43,10 +43,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     #[Assert\NotBlank(message: "Le mot de passe est obligatoire")]
     #[Assert\Length(min: 8, minMessage: "Le mot de passe doit contenir au minimum {{ limit }} caractères")]
+    #[Groups(["edit","create"])]
     private ?string $password = null;
 
     #[ORM\Column(length: 10, nullable: true)]
-    #[Groups(["users"])]
+    #[Groups(["users", "edit","create"])]
     private ?string $postalCode = null;
 
     /**
