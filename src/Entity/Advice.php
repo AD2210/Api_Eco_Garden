@@ -15,17 +15,17 @@ class Advice
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["advices", "create"])]
+    #[Groups(["advices"])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(message: "Le champ text du conseil est obligatoire")]
-    #[Groups(["advices", "create"])]
+    #[Groups(["advices", "edit"])]
     private ?string $text = null;
 
     #[ORM\Column]
     #[Assert\NotBlank(message: "Veuillez preciser le mois auquel ce conseil fait référence")]
-    #[Groups(["advices", "create"])]
+    #[Groups(["advices", "edit"])]
     private ?int $month = null;
 
     #[ORM\ManyToOne(inversedBy: 'advices')]

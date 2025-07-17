@@ -129,6 +129,12 @@ final class AdviceController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
+    #[OA\RequestBody(
+        description: 'body au format json',
+        content: new OA\JsonContent(
+            ref: new Model(type: Advice::class, groups: ['edit'])
+        )
+    )]
     #[OA\Response(response: 204, description: 'Succès')]
     #[OA\Response(response: 400, description: 'Mauvaise requête, vérifier que le paramètre `id` est un nombre')]
     #[OA\Response(response: 401, description: 'Non Authentifié, renseigner votre token JWT dans `Authorize`')]
@@ -190,7 +196,7 @@ final class AdviceController extends AbstractController
     #[OA\RequestBody(
         description: 'body au format json',
         content: new OA\JsonContent(
-            ref: new Model(type: Advice::class, groups: ['create'])
+            ref: new Model(type: Advice::class, groups: ['edit'])
         )
     )]
     #[OA\Response(

@@ -55,7 +55,7 @@ symfony console doctrine:fixtures:load
 
 ## Usage
 
-Démarer votre serveur symfony
+1 - Démarer votre serveur symfony
 
 > [!NOTE]
 > Si vous avez la version 5.12.0 de symfony CLI le `-d` ne fonctionne plus sur Windows
@@ -64,7 +64,11 @@ Démarer votre serveur symfony
 symfony serve -d
 ```
 
-Pour vous logger, en fonction du rôle souhaité :
+2 - Acceder à la documentation de l'API
+
+ `https://127.0.0.1:8000/api/doc`
+
+3 - Pour vous logger, en fonction du rôle souhaité :
 
 user : `user@ecogarden.com` ou `admin@ecogarden.com`
 
