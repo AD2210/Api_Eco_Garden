@@ -47,11 +47,19 @@ symfony console doctrine:database:create
 symfony console doctrine:schema:update --force
 ```
 
-6 - **Optionnel** Charger les Fixtures avec la commande
+6 - Charger les Fixtures avec la commande
 
 ```bash
 symfony console doctrine:fixtures:load 
 ```
+
+7 - Initialiser les clés JWT
+
+```bash
+symfony console lexik:jwt:generate-keypair
+```
+
+8 - Copier la clé API fourni dans _.env.local_
 
 ## Usage
 
