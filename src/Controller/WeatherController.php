@@ -81,6 +81,12 @@ final class WeatherController extends AbstractController
         return $wheaterForecastService->makeCustomForcast($response);
     }
 
+    #[OA\Parameter(
+        name: 'ville',
+        in: 'path',
+        schema: new OA\Schema(type: 'string'),
+        description: 'Ville'
+    )]
     #[OA\Response(
         response: 200,
         description: 'Météo',

@@ -51,3 +51,8 @@ nelmio_api_doc:
     areas: # to filter documented areas
         path_patterns:
             - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
+    
+    #On supprimer la section schema en bas qui n'est pas lisible (on conserve dans les routes)
+    html_config:
+        swagger_ui_config:
+            defaultModelsExpandDepth: -1

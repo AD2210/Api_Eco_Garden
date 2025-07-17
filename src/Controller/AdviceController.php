@@ -63,6 +63,12 @@ final class AdviceController extends AbstractController
         return new JsonResponse($jsonAdvices, Response::HTTP_OK, [], true);
     }
 
+    #[OA\Parameter(
+        name: 'mois',
+        in: 'path',
+        schema: new OA\Schema(type: 'int'),
+        description: 'Mois'
+    )]
     #[OA\Response(
         response: 200,
         description: 'Succès',
@@ -101,6 +107,12 @@ final class AdviceController extends AbstractController
         return new JsonResponse($jsonAdvices, Response::HTTP_OK, [], true);
     }
 
+    #[OA\Parameter(
+        name: 'id',
+        in: 'path',
+        schema: new OA\Schema(type: 'int'),
+        description: 'Identifiant'
+    )]
     #[OA\Response(response: 204, description: 'Succès')]
     #[OA\Response(response: 400, description: 'Mauvaise requête, vérifier que le paramètre `id` est un nombre')]
     #[OA\Response(response: 401, description: 'Non Authentifié, renseigner votre token JWT dans `Authorize`')]
@@ -129,6 +141,12 @@ final class AdviceController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
+    #[OA\Parameter(
+        name: 'id',
+        in: 'path',
+        schema: new OA\Schema(type: 'int'),
+        description: 'Identifiant'
+    )]
     #[OA\RequestBody(
         description: 'body au format json',
         content: new OA\JsonContent(
