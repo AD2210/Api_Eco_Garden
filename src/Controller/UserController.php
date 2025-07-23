@@ -36,7 +36,6 @@ final class UserController extends AbstractController
     #[OA\Response(response: 201, description: 'Crée avec succès')]
     #[OA\Response(response: 400, description: 'Mauvaise requête, vérifier votre saisie dans le body')]
     #[OA\Tag(name: "User")]
-    #[Security(name: 'Bearer')]
     #[Route('/user', name: 'user_create', methods: ['POST'])]
     /**
      * Crée un nouvel utilisateur
@@ -99,7 +98,6 @@ final class UserController extends AbstractController
     #[OA\Response(response: 403, description: 'Non Autorisé, vous devez être administrateur pour effectué cette action')]
     #[OA\Response(response: 404, description: 'Non Trouvé, cet id n\'exite pas')]
     #[OA\Tag(name: "User")]
-    #[Security(name: 'Bearer')]
     #[Route('/user/{id}', name: 'user_update', methods: ['PUT'])]
     /**
      * Mise à jour d'un utilisateur
@@ -152,7 +150,6 @@ final class UserController extends AbstractController
     #[OA\Response(response: 403, description: 'Non Autorisé, vous devez être administrateur pour effectué cette action')]
     #[OA\Response(response: 404, description: 'Non Trouvé, cet id n\'exite pas')]
     #[OA\Tag(name: "User")]
-    #[Security(name: 'Bearer')]
     #[Route('/user/{id}', name: 'user_delete', methods: ['DELETE'])]
     /**
      * Supprime un utilisateur

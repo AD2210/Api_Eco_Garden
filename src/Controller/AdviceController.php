@@ -41,7 +41,6 @@ final class AdviceController extends AbstractController
     )]
     #[OA\Response(response: 401, description: 'Non Authentifié')]
     #[OA\Tag(name: "Conseil")]
-    #[Security(name: 'Bearer')]
     #[Route('/conseil', name: 'advices', methods: ['GET'])]
     /**
      * Renvoi les conseils du mois en cours
@@ -79,7 +78,6 @@ final class AdviceController extends AbstractController
     #[OA\Response(response: 400, description: 'Mauvaise requête, vérifier que le paramètre `mois` est un nombre entre 1 et 12')]
     #[OA\Response(response: 401, description: 'Non Authentifié, renseigner votre token JWT dans `Authorize`')]
     #[OA\Tag(name: "Conseil")]
-    #[Security(name: 'Bearer')]
     #[Route('/conseil/{mois}', name: 'advice_month', methods: ['GET'])]
     /**
      * Renvoi les conseils pour un mois donné
@@ -119,7 +117,6 @@ final class AdviceController extends AbstractController
     #[OA\Response(response: 403, description: 'Non Autorisé, vous devez être administrateur pour effectué cette action')]
     #[OA\Response(response: 404, description: 'Non Trouvé, cet id n\'exite pas')]
     #[OA\Tag(name: "Conseil")]
-    #[Security(name: 'Bearer')]
     #[Route('/conseil/{id}', name: 'advice_delete', methods: ['DELETE'])]
     /**
      * Supprime un conseil
@@ -159,7 +156,6 @@ final class AdviceController extends AbstractController
     #[OA\Response(response: 403, description: 'Non Autorisé, vous devez être administrateur pour effectué cette action')]
     #[OA\Response(response: 404, description: 'Non Trouvé, cet id n\'exite pas')]
     #[OA\Tag(name: "Conseil")]
-    #[Security(name: 'Bearer')]
     #[Route('/conseil/{id}', name: 'advice_update', methods: ['PUT'])]
     /**
      * Mise à jour un conseil
@@ -228,7 +224,6 @@ final class AdviceController extends AbstractController
     #[OA\Response(response: 401, description: 'Non Authentifié, renseigner votre token JWT dans `Authorize`')]
     #[OA\Response(response: 403, description: 'Non Autorisé, vous devez être administrateur pour effectué cette action')]
     #[OA\Tag(name: "Conseil")]
-    #[Security(name: 'Bearer')]
     #[Route('/conseil', name: 'advice_create', methods: ['POST'])]
     /**
      * Ajout d'un nouveau conseil

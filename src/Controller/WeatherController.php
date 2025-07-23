@@ -46,7 +46,6 @@ final class WeatherController extends AbstractController
     #[OA\Response(response: 401, description: 'Non Authentifié, renseigner votre token JWT dans `Authorize`')]
     #[OA\Response(response: 500, description: 'Echec de l\'appel à l\'api météo')]
     #[OA\Tag(name: "Météo")]
-    #[Security(name: 'Bearer')]
     #[Route('/meteo', name: 'weather', methods:['GET'])]
     /**
      * Renvoi un rapport météo grâce au code postal fourni par l'utilisateur lors de l'inscription
@@ -106,7 +105,6 @@ final class WeatherController extends AbstractController
     #[OA\Response(response: 401, description: 'Non Authentifié, renseigner votre token JWT dans `Authorize`')]
     #[OA\Response(response: 500, description: 'Echec de l\'appel à l\'api météo')]
     #[OA\Tag(name: "Météo")]
-    #[Security(name: 'Bearer')]
     #[Route('/meteo/{ville}', name: 'weather_city', methods:['GET'])]
     /**
      * Renvoi un rapport météo pour une ville donnée 
